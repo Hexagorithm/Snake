@@ -25,13 +25,17 @@ class Game:
         self.running = True
         self.mode = 'playing'
         self.clock = pg.time.Clock()
-        self.screen = pg.display.set_mode(size = self.screen_size)
+        self.screen = pg.display.set_mode(size=self.screen_size)
+        icon = pg.image.load(st.snake_head_path)
+        caption = 'Snake'
+        pg.display.set_caption(caption)
+        pg.display.set_icon(icon)
 
     def get_mode(self):
         if self.mode == 'playing':
             return Playing(self.screen)
         elif self.mode == 'screen1':
-            return Screen1(self.screen)
+            return ScreenLoss(self.screen)
         elif self.mode == 'screen2':
             return Screen2(self.screen)
 
@@ -106,6 +110,13 @@ class Playing(Screen):
                     for snakehead in self.snake_head:
                         snakehead.dir_change(event.unicode)
 
+    def check_if_loss(self):
+        for tile in self.tiles_border:
+            for snakehead in self.snake_head:
+                if snakehead.rect.colliderect(tile.rect):
+                    self.running = False
+                    self.changed_mode = 'screen1'
+
     def display(self):
         self.screen.fill('green')
         for tile in self.tiles_border:
@@ -115,6 +126,7 @@ class Playing(Screen):
         for snakehead in self.snake_head:
             snakehead.update()
             snakehead.draw()
+        self.check_if_loss()
 
     def change_mode(self):
         return self.changed_mode
@@ -122,7 +134,7 @@ class Playing(Screen):
 
 
 
-class Screen1(Screen):
+class ScreenLoss(Screen):
 
     def __init__(self,screen):
         self.screen = screen
