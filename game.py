@@ -97,9 +97,7 @@ class Playing(Screen):
                     self.tiles_map.add(tile)
 
     def create_snake(self):
-        self.snake_head = pg.sprite.GroupSingle()
-        snakehead = SnakeHead(st.spawn_cord,self.screen)
-        self.snake_head.add(snakehead)
+        self.snake_head = SnakeHead(st.spawn_cord,self.screen)
 
     def events(self):
         for event in pg.event.get():
@@ -107,15 +105,13 @@ class Playing(Screen):
                 self.changed_mode = 'quit'
             if event.type == pg.KEYDOWN:
                 if event.unicode in ['w', 's', 'a', 'd']:
-                    for snakehead in self.snake_head:
-                        snakehead.dir_change(event.unicode)
+                    self.snake_head.dir_change(event.unicode)
 
     def check_if_loss(self):
         for tile in self.tiles_border:
-            for snakehead in self.snake_head:
-                if snakehead.rect.colliderect(tile.rect):
-                    self.running = False
-                    self.changed_mode = 'screen1'
+            if self.snake_head.rect.colliderect(tile.rect):
+                self.running = False
+                self.changed_mode = 'screen1'
 
     def display(self):
         self.screen.fill('green')
@@ -123,9 +119,8 @@ class Playing(Screen):
             tile.draw()
         for tile in self.tiles_map:
             tile.draw()
-        for snakehead in self.snake_head:
-            snakehead.update()
-            snakehead.draw()
+        self.snake_head.update()
+        self.snake_head.draw()
         self.check_if_loss()
 
     def change_mode(self):
